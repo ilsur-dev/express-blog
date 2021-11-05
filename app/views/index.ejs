@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блог</title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+<body>
+    <section class="left">
+        <h1>Создание поста</h1>
+        <form action="/" method="post" class="form">
+            <input type="text" name="title" placeholder="Название">
+            <textarea name="text" id="post_text" cols="30" rows="10" placeholder="Текст поста"></textarea>
+            <button type="submit">Опубликовать</button>
+        </form>
+    </section>
+    <section class="right">
+        <h1>Блог</h1>
+        <% articles.forEach((data, i) => { %>
+            <article>
+                <h2 class="title"><%= data.title %></h2>
+                <p class="content"><%= data.text %></p>
+            </article>
+        <% }) %>
+    </section>
+</body>
+</html>

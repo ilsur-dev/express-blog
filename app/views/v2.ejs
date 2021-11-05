@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блог</title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+<body>
+    <section class="left">
+        <h1>Создание поста</h1>
+        <div class="form">
+            <input type="text" id="post_title" name="title" placeholder="Название">
+            <textarea name="text" id="post_text" cols="30" rows="10" placeholder="Текст поста"></textarea>
+            <button onclick="createPost()">Опубликовать</button>
+        </div>
+    </section>
+    <section class="right" id="blog">
+        <h1>Блог</h1>
+    </section>
+    <script>
+        function deletePost(i) {
+            fetch(`/api/posts/${i}`, {method: 'DELETE'})
+            .then(r => r.json())
+            .then(r => render(r))
+        }
+
+        function render(r) {
+            const blog = document.getElementById('blog')
+            blog.innerHTML = '<h1>Блог</h1>'
+
+            r.forEach((data, i) => {
+                console.log(data, i)
+
+                const article = document.createElement('article')
+
+                const h2 = document.createElement('h2')
+                h2.className = 'title'
+                h2.textContent = data.title
+
+                const p = document.createElement('p')
+                p.className = 'content'
+                p.textContent = data.text
+
+                const button = document.createElement('button')
+                button.textContent = 'X'
+                button.onclick = () => deletePost(i)
+                button.className = 'delete_button'
+
+                article.appendChild(button)
+                article.appendChild(h2)
+                article.appendChild(p)
+
+                blog.appendChild(article)
+            })
+        }
+
+        function createPost() {
+            const title = document.getElementById('post_title').value
+            const text = document.getElementById('post_text').value
+
+            console.log('createPost', {title, text})
+            fetch('/api/posts', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({title, text})
+            })
+                .then(r => r.json())
+                .then(r => render(r))
+        }
+
+        fetch('/api/posts')
+            .then(r => r.json())
+            .then(r => render(r))
+    </script>
+</body>
+</html>
