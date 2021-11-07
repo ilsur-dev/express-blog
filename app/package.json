@@ -4,12 +4,15 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon -L -e js,ejs,html,css index.js"
+    "start": "nodemon -L -e js,ejs,html,css index.js",
+    "migrate": "node-pg-migrate"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
-    "nodemon": "^2.0.14"
+    "node-pg-migrate": "^6.0.0",
+    "nodemon": "^2.0.14",
+    "pg": "^8.7.1"
   }
 }

@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const path = require('path')
 const bodyParser = require('body-parser');
+const pgClient = require('./db');
 const PORT = 41800
 
 app.use(bodyParser.json())
@@ -11,17 +12,30 @@ app.set("view engine", "ejs")
 app.set("views", path.join(__dirname, 'views'))
 app.use(express.static(__dirname + '/public'))
 
-let articles = [
-    {title: 'Пример', text: 'Lorem ipsum'}
-]
+const getPosts = async () => {
+    return (await pgClient.query('SELECT id, title, post_content as text FROM posts ORDER BY id DESC')).rows;
+}
+
+const createPost = async (title, text) => {
+    await pgClient.query(
+        'INSERT INTO posts(title, post_content) VALUES ($1, $2)',
+        [title, text]
+    );
+}
 
 app.get('/hello', (req, res) => {
     res.send('Hello World')
 })
 
 // Первая версия блога (Server Side Rendering)
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
+    const articles = await getPosts()
     res.render('index', {articles})
+})
+
+app.post('/', async (req, res) => {
+    await createPost(req.body.title, req.body.text)
+    res.redirect('/')
 })
 
 // Вторая версия блога (Запросы к API с фронтенда)
@@ -29,23 +43,21 @@ app.get('/v2', (req, res) => {
     res.render('v2')
 })
 
-app.post('/', (req, res) => {
-    articles.unshift({title: req.body.title, text: req.body.text})
-    res.redirect('/')
+app.get('/api/posts', async (req, res) => {
+    const rows = await getPosts()
+    res.send(rows)
 })
 
-app.get('/api/posts', (req, res) => {
-    res.send(articles)
+app.post('/api/posts', async (req, res) => {
+    await createPost(req.body.title, req.body.text)
+    const rows = await getPosts()
+    res.send(rows)
 })
 
-app.post('/api/posts', (req, res) => {
-    articles.unshift({title: req.body.title, text: req.body.text})
-    res.send(articles)
-})
-
-app.delete('/api/posts/:index', (req, res) => {
-    articles.splice(req.params.index, 1)
-    res.send(articles)
+app.delete('/api/posts/:id', async (req, res) => {
+    await pgClient.query('DELETE FROM posts WHERE id=$1', [req.params.id])
+    const rows = await getPosts()
+    res.send(rows)
 })
 
 app.listen(PORT, () => {

@@ -1,0 +1,41 @@
+version: "3.7"
+
+services:
+  backend:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgres://root:qwerty@postgres/lesson
+    tty: true
+    ports:
+      - "127.0.0.1:41800:41800"
+    volumes:
+      - ./app:/app:rw
+      - /app/node_modules
+    depends_on:
+      - postgres
+    networks:
+      - internal
+
+  postgres:
+    image: postgres:12.2
+    tty: true
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+      POSTGRES_DB: lesson
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: qwerty
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d lesson -U root" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
