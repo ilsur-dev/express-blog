@@ -5,12 +5,14 @@
   "license": "MIT",
   "scripts": {
     "start": "nodemon -L -e js,ejs,html,css index.js",
-    "migrate": "node-pg-migrate"
+    "migrate": "node_modules/.bin/node-pg-migrate"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "node-pg-migrate": "^6.0.0",
     "nodemon": "^2.0.14",
     "pg": "^8.7.1"

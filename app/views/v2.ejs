@@ -8,6 +8,7 @@
 </head>
 <body>
     <section class="left">
+        <a href="/logout">Выйти из аккаунта</a>
         <h1>Создание поста</h1>
         <div class="form">
             <input type="text" id="post_title" name="title" placeholder="Название">
@@ -42,6 +43,10 @@
                 p.className = 'content'
                 p.textContent = data.text
 
+                const h5 = document.createElement('h5')
+                h5.className = 'author'
+                h5.textContent = `Автор: ${data.user_name} (id ${data.user_id})`
+
                 const button = document.createElement('button')
                 button.textContent = 'X'
                 button.onclick = () => deletePost(data.id)
@@ -50,6 +55,7 @@
                 article.appendChild(button)
                 article.appendChild(h2)
                 article.appendChild(p)
+                article.appendChild(h5)
 
                 blog.appendChild(article)
             })
